@@ -11,37 +11,27 @@
 
 #include "PlayCaptureSlate.h"
 
-
-static const FName PlayCaptureTabName("PlayCapture");
-
 #define LOCTEXT_NAMESPACE "FPlayCaptureModule"
-
 
 void FPlayCaptureModule::StartupModule()
 {
-	// This code will execute after your module is loaded into memory; the exact timing is specified in the .uplugin file per-module
-	
+	// Initialize play button ui style
 	FPlayCaptureStyle::Initialize();
 	FPlayCaptureStyle::ReloadTextures();
 
+	// Register play capture commands
 	FPlayCaptureCommands::Register();
-	
 	PluginCommands = MakeShareable(new FUICommandList);
 
+	// Add play capture button command
 	PluginCommands->MapAction(
 		FPlayCaptureCommands::Get().OpenPluginWindow,
 		FExecuteAction::CreateRaw(this, &FPlayCaptureModule::PluginButtonClicked),
 		FCanExecuteAction());
 		
 	FLevelEditorModule& LevelEditorModule = FModuleManager::LoadModuleChecked<FLevelEditorModule>("LevelEditor");
-	
-	{
-		TSharedPtr<FExtender> MenuExtender = MakeShareable(new FExtender());
-		MenuExtender->AddMenuExtension("WindowLayout", EExtensionHook::After, PluginCommands, FMenuExtensionDelegate::CreateRaw(this, &FPlayCaptureModule::AddMenuExtension));
-
-		LevelEditorModule.GetMenuExtensibilityManager()->AddExtender(MenuExtender);
-	}
-	
+		
+	// Add play capture button to editor
 	{
 		TSharedPtr<FExtender> ToolbarExtender = MakeShareable(new FExtender);
 		ToolbarExtender->AddToolBarExtension("Settings", EExtensionHook::After, PluginCommands, FToolBarExtensionDelegate::CreateRaw(this, &FPlayCaptureModule::AddToolbarExtension));
@@ -58,7 +48,7 @@ void FPlayCaptureModule::ShutdownModule()
 
 	FPlayCaptureCommands::Unregister();
 
-	// Disable windows
+	// Disable PlayCapture Window
 	FPlayCaptureSlate::Shutdown();
 }
 
@@ -75,13 +65,8 @@ void FPlayCaptureModule::SetTextureRenderTarget2D(UTextureRenderTarget2D * TexRe
 
 void FPlayCaptureModule::PluginButtonClicked()
 {
-	// Init Window
+	// Init layCapture Window
 	FPlayCaptureSlate::Initialize();
-}
-
-void FPlayCaptureModule::AddMenuExtension(FMenuBuilder& Builder)
-{
-	Builder.AddMenuEntry(FPlayCaptureCommands::Get().OpenPluginWindow);
 }
 
 void FPlayCaptureModule::AddToolbarExtension(FToolBarBuilder& Builder)

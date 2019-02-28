@@ -6,6 +6,7 @@
 void UPCSceneCaptureComponent2D::Activate(bool bReset)
 {
 	Super::Activate();
+	// Assign Render texture to shared module variale
 	IPlayCapture::Get().SetTextureRenderTarget2D(this->TextureTarget);
 }
 
@@ -13,6 +14,7 @@ void UPCSceneCaptureComponent2D::Activate(bool bReset)
 void UPCSceneCaptureComponent2D::OnRegister()
 {
 	Super::OnRegister();
+	// Assign Render texture to shared module variale
 	IPlayCapture::Get().SetTextureRenderTarget2D(this->TextureTarget);
 }
 #endif

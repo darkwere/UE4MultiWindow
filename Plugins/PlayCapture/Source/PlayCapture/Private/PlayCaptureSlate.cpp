@@ -12,21 +12,13 @@
 #include "IPlayCapture.h"
 
 
-
-FPlayCaptureViewportClient::FPlayCaptureViewportClient()
-{
-}
-
-FPlayCaptureViewportClient::~FPlayCaptureViewportClient()
-{
-}
-
 void FPlayCaptureViewportClient::Draw(FViewport * Viewport, FCanvas * Canvas)
 {
-	Canvas->Clear(FLinearColor::Gray);
+	// Clear entire canvas
+	Canvas->Clear(FLinearColor::Black);
 
+	// Draw SceenCaptureComponent texture to entire canvas
 	auto TextRenderTarget2D = IPlayCapture::Get().GetTextureRenderTarget2D();
-
 	if (TextRenderTarget2D.IsValid() && TextRenderTarget2D->Resource != nullptr)
 	{
 		FCanvasTileItem TileItem(FVector2D(0, 0), TextRenderTarget2D->Resource, 
@@ -55,18 +47,25 @@ bool FPlayCaptureViewportClient::InputGesture(FViewport * Viewport, EGestureEven
 
 void SPlayCaptureViewport::Construct(const FArguments& InArgs)
 {
+	// Create Viewport Widget
 	Viewport = SNew(SViewport)
 		.IsEnabled(true)
-		.EnableGammaCorrection(false)// Gamma correction in the game is handled in post processing in the scene renderer
+		.EnableGammaCorrection(false)
 		.ShowEffectWhenDisabled(false)
 		.EnableBlending(true)
 		.ToolTip(SNew(SToolTip).Text(FText::FromString("SPlayCaptureViewport")));
 
 
+	// Create Viewport Client
 	PlayCaptureViewportClient = MakeShareable(new FPlayCaptureViewportClient());
+
+	// Create Scene Viewport
 	SceneViewport = MakeShareable(new FSceneViewport(PlayCaptureViewportClient.Get(), Viewport));
+
+	// Assign SceneViewport to Viewport widget. It needed for rendering
 	Viewport->SetViewportInterface(SceneViewport.ToSharedRef());
 
+	// Assing Viewport widget for our custom PlayCapture Viewport
 	this->ChildSlot
 		[
 			Viewport.ToSharedRef()
@@ -75,6 +74,7 @@ void SPlayCaptureViewport::Construct(const FArguments& InArgs)
 
 void SPlayCaptureViewport::Tick(const FGeometry & AllottedGeometry, const double InCurrentTime, const float InDeltaTime)
 {
+	// Call FViewport each engine tick
 	SceneViewport->Draw();
 }
 
@@ -95,14 +95,14 @@ FPlayCaptureSlate::FPlayCaptureSlate()
 		.SaneWindowPlacement(false)
 		.SizingRule(ESizingRule::UserSized);
 
-	//PlayCaptureWindow->SetViewportSizeDrivenByWindow(true);
 	FSlateApplication::Get().AddWindow(PlayCaptureWindow.ToSharedRef());
+
+	// Assign window events delegator
 	InDelegate.BindRaw(this, &FPlayCaptureSlate::OnWindowClosed);
 	PlayCaptureWindow->SetOnWindowClosed(InDelegate);
 
-
+	// Create and assign viewport to window
 	PlayCaptureViewport = SNew(SPlayCaptureViewport);
-	
 	PlayCaptureWindow->SetContent(PlayCaptureViewport.ToSharedRef());
 }
 
@@ -113,6 +113,7 @@ FPlayCaptureSlate::~FPlayCaptureSlate()
 
 void FPlayCaptureSlate::Initialize()
 {
+	// Create single instance of PlayCaptureSlate
 	if (!PlayCaptureSlate.IsValid())
 	{
 		FPlayCaptureSlate::PlayCaptureSlate = MakeShareable(new FPlayCaptureSlate());

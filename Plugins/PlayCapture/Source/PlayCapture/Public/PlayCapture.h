@@ -8,6 +8,9 @@
 class FToolBarBuilder;
 class FMenuBuilder;
 
+/**
+* Plagin Module class
+*/
 class FPlayCaptureModule : public IPlayCapture
 {
 public:
@@ -16,6 +19,7 @@ public:
 	virtual void StartupModule() override;
 	virtual void ShutdownModule() override;
 
+	/** IPlayCapture implementation */
 	virtual TWeakObjectPtr<UTextureRenderTarget2D> GetTextureRenderTarget2D() override;
 	virtual void SetTextureRenderTarget2D(UTextureRenderTarget2D* TexRenderTarget2D) override;
 	
@@ -23,9 +27,10 @@ public:
 	void PluginButtonClicked();
 	
 private:
-
+	/**
+	* Play Capture button handler
+	*/
 	void AddToolbarExtension(FToolBarBuilder& Builder);
-	void AddMenuExtension(FMenuBuilder& Builder);
 
 private:
 	TSharedPtr<class FUICommandList> PluginCommands;

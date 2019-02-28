@@ -41,7 +41,16 @@ public:
 
 
 public:
-	// ++ Pointer to UTextureRenderTarget2D. To make sure UTextureRenderTarget2D lifetime is controlled elsewhere, use "weak" ptr.
+	/**
+	* Get pointer to Texture render target
+	* To make sure UTextureRenderTarget2D lifetime is controlled elsewhere, use "weak" ptr.
+	* This is abstract fucntion and it need to be implemened
+	*/
 	virtual TWeakObjectPtr<UTextureRenderTarget2D> GetTextureRenderTarget2D() = 0;
+
+	/**
+	* Set UTextureRenderTarget2D to TWeakObjectPtr
+	* This is abstract fucntion and it need to be implemened
+	*/
 	virtual void SetTextureRenderTarget2D(UTextureRenderTarget2D* TexRenderTarget2D) = 0;
 };
